@@ -13,8 +13,8 @@ spark-submit   --jars joda-convert-1.7.jar --jars joda-time-2.9.jar --class "Hot
 ## Q&A
 
 1.  Where is the source code?
-Source code is located in [src/main/scala/hotSpot.scala](https://github.com/yiic/NYC-Hot-Spot/blob/master/src/main/scala/HotSpot.scala)
+Source code is located in [src/main/scala/hotSpot.scala](https://github.com/yiic/NYC-Hot-Spots/blob/master/src/main/scala/HotSpot.scala)
 2. What is the format of input file?
-A sample input file is in [input_test/test_verify.csv](https://github.com/yiic/NYC-Hot-Spot/blob/master/input_test/test_verify.csv)
+A sample input file is in [input_test/test_verify.csv](https://github.com/yiic/NYC-Hot-Spots/blob/master/input_test/test_verify.csv)
 
 	
