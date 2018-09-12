@@ -44,15 +44,15 @@ object HotSpot {
 	//set time format
   	val formatter = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm")
 
-  	//Point class to store longitude and latitude of input data	
+  	//Point: wrapper class contains longitude and latitude
   	case class Point(longitude: Double, latitude: Double)
   
-  	//point function : read and parse input data	
+  	//read and parse input data	
   	def point(longitude: String, latitude: String): Point = {
 		new Point(longitude.toDouble, latitude.toDouble)
   	}
 
-  	//parse function: parse input data to get (dropoff Time, dropoff Location, number of passengers)
+  	//parse input data to get (dropoff Time, dropoff Location, number of passengers)
   	def parse(line: String): (DateTime, Point, Int) = {
 		val fields = line.split(',')
 		val license = fields(0)
@@ -64,7 +64,7 @@ object HotSpot {
 		(dropoffTime, dropoffLoc, passenger)
   	}
  
-	//spread_voxels function: spread values to its neighbors based on Queen distance of 200m for the preceding, current, and following two hour time periods
+	//spread values to its neighbors based on Queen distance of 200m for the preceding, current, and following two hour time periods
 	def spread_voxels(pvec: ((Int,Int,Long),Int), degree: Double, hour: Long) = {
 		val wind = -1 to 1
 	  	val pos = pvec._1
@@ -121,7 +121,6 @@ object HotSpot {
 	    val M_1_SQRT_2PI = 0.398942280401432677939946059934  // 1/sqrt(2pi)
 	    val M_SQRT_32 = 5.656854249492380195206754896838   // sqrt(32)    
 	  
-	    // val eps = 0.5 * pow (2, 1.0-60.0)
 	    val eps = 2.2204460492503131e-016  // machine epsilon
 	    val min = 2.2250738585072014e-308
           
@@ -145,7 +144,7 @@ object HotSpot {
 			cum  = 0.5 + temp
 			ccum = 0.5 - temp
 
-		// 2nd case: qnorm(3/4)1 <= |x| <= sqrt(32)
+		//2nd case: qnorm(3/4)1 <= |x| <= sqrt(32)
 		} else if (y <= M_SQRT_32) {
 			xnum = c(8) * y
 			xden = y
@@ -160,7 +159,7 @@ object HotSpot {
 			ccum = 1.0 - cum
 			if (x > 0.0) { temp = cum; cum = ccum; ccum = temp }
 
-		// 3rd case: -37.5193 < x && x < 8.2924 || -8.2924  < x && x < 37.5193
+		//3rd case: -37.5193 < x && x < 8.2924 || -8.2924  < x && x < 37.5193
 		} else if (-37.5193 < x && x < 8.2924 || -8.2924 < x && x < 37.5193) {
 			xsq = 1.0 / (x * x)
 			xnum = p(5) * xsq
@@ -177,7 +176,7 @@ object HotSpot {
 			ccum = 1.0 - cum
 			if (x > 0.0) { temp = cum; cum  = ccum; ccum = cum }
 
-		// 4th case: high x values
+		//4th case: high x values
 		} else {
 			if (x > 0) { cum = 1.0; ccum = 0.0 }
 			else { cum = 0.0; ccum = 1.0 }
@@ -187,16 +186,16 @@ object HotSpot {
 		if (ccum < min) ccum = 0.0
 
 		cum
-	} // normalCDF
+	} //normalCDF
 
 	def main(args: Array[String]) {
 
-		/******************create Spark context with Spark configuration****************************************/
+		/************************ create Spark context with Spark configuration ************************/
 
 		val conf = new SparkConf().setAppName("Simple Application").set("spark.shuffle.blockTransferService", "nio")
 		val sc = new SparkContext(conf)
 
-		/**********************************Processing Input data **********************************************/
+		/************************************ Processing Input data ************************************/
 
 		//get input data 
 		val input = sc.textFile(args(0))	
@@ -213,13 +212,13 @@ object HotSpot {
 		val filterData = parseData.filter(x => (abs(x._2.longitude) >= 73.7) && (abs(x._2.longitude) <= 74.25) && (abs(x._2.latitude) >= 40.5) && (abs(x._2.latitude) <= 40.9))   	  
 
 		//read parameters	
-		val hour: Long = args(3).toInt * 24 * 60 * 60 			//Time step size --days*24*60*60 seconds 
-		val degree = args(2).toDouble 	   			//Cell size
+		val hour: Long = args(3).toInt * 24 * 60 * 60  //Time step size --days*24*60*60 seconds 
+		val degree = args(2).toDouble  //Cell size
 
 		//set Cube parameters    
-		val lat_s = 0.0025  			   		//200m latitude
-		val long_s = 0.0025 			   		//200m longitude	
-		val hour_s = 2 * 60 * 60                    			//2*60*60=7200 seconds
+		//val lat_s = 0.0025  //200m latitude
+		//val long_s = 0.0025 	//200m longitude	
+		//val hour_s = 2 * 60 * 60  //2*60*60=7200 seconds
 
 		//set time step origin
 		val standrad1 = formatter.parse("2015/01/01 00:00")		
@@ -258,7 +257,7 @@ object HotSpot {
 		//store tubeCombine to main memory for using again
 		tubeCombine.cache() 
 
-		/********************************** calculate G* and Pvalue **************************************/
+		/******************************* calculate G* and Pvalue **********************************/
 
 		//total number of cells	
 		val cellN = tubeCombine.count()   
@@ -287,11 +286,10 @@ object HotSpot {
 			var own = 0
 
 			//check current tube available or not
-			//check array buffer whether includes current tube index. if true, select ==1 else select ==0
+			//check array buffer whether includes current tube index. if true, select == 1 else select == 0
 			loop.breakable {
 				v.foreach(a => {
-					if(a._1 == k._1 && a._2 == k._2 && a._3 == k._3)
-					{
+					if(a._1 == k._1 && a._2 == k._2 && a._3 == k._3) {
 						select = 1
 						own = a._4
 						loop.break
@@ -299,7 +297,7 @@ object HotSpot {
 				})
 			}
 			// for available tube, calculate G* and Pvalue  			
-			if(select ==1) {
+			if(select == 1) {
 				//do accumulation(Wi,j * Xj) which Wi,j of neighbor is 1, otherwise 0 
 				v.foreach(a => {
 						accum = accum+ a._4.toDouble
@@ -318,7 +316,7 @@ object HotSpot {
 				}
 			}
 
-			 //calculate Pvalue : a standard normal CDF conversion w/ two tails based on G*
+			 //calculate pValue : a standard normal CDF conversion w / two tails based on G*
 			 pValue = 2 * (1 - normalCDF(math.abs(gstar)))
 
 			 //(cell_x, cell_y, time_step, zscore, pvalue)
