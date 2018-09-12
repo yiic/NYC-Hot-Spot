@@ -1,6 +1,7 @@
 /*
-This Scala program identify spatio-temporal hot spots in New York City Yellow Cab taxi trip using Getis-Ord Gi* statistical. 
-Dataset records spanning January 2009 to June 2015.
+
+This Scala program identify spatio-temporal hot spots in New York City Yellow Cab taxi trip using Getis-Ord Gi* statistic. 
+Dataset records spanning  from January 2009 to June 2015. http://www.nyc.gov/html/tlc/html/about/trip_record_data.shtml
 
 Major functions include:
 
@@ -16,6 +17,7 @@ Major functions include:
 5. zeroX(pvec: ((Int,Int,Long),Int)):get value and set key to 0 for X 
 
 6. normalCDF (x: Double) : calculate a standard normal CDF conversion w/ two tails based on G*
+
 */
 
 import org.apache.spark.SparkContext
