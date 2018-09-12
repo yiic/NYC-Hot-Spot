@@ -1,4 +1,4 @@
-# Introduction
+# NYC Taxi Trip Hot Spots
 
 This program identified spatio-temporal hot spots in New York City Yellow Cab taxi trips using Getis-Ord Gi* statistical.
 * __DataSet:__  New York City Yellow Cab taxi trip records from January 2009 to June 2015
